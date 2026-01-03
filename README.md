@@ -1,71 +1,39 @@
-# YourFirstMove - Production-Ready Productivity Application
+# YourFirstMove - Productivity Application
 
-A high-end, full-stack productivity application with an **extraordinary modern SaaS dark mode design** inspired by Linear, Stripe, and Vercel. Manage your daily and monthly tasks through an intuitive visual roadmap interface with automated SMS notifications, real-time progress tracking, and gamified productivity features.
-
-## ✨ Design System
-
-### Modern SaaS Aesthetic
-- **Glassmorphism**: Backdrop blur effects with subtle transparency
-- **Smooth Micro-interactions**: 200-300ms transitions with ease-in-out curves
-- **Consistent Border Radius**: 8-12px for unified visual language
-- **Soft Shadows**: Layered depth with subtle elevation
-- **Typography**: Inter font family for clean, modern UI
-- **Color System**: Deep neutrals with vibrant purple/blue accents
-- **Dark Mode First**: Optimized for low-light environments
-- **CSS Variables**: Centralized design tokens for easy theming
-
-### Key Visual Features
-- Glassmorphic sidebar with backdrop blur
-- Gradient text effects on headings
-- Hover lift animations on interactive elements
-- Glow effects on primary actions
-- Smooth page transitions and animations
-- Priority color coding (green → yellow → orange → red)
-- Custom scrollbar styling
-- Focus rings for accessibility
+A full-stack productivity platform for managing daily and monthly tasks. Features include an interactive visual roadmap, automated SMS notifications, real-time progress tracking, and gamified productivity features.
 
 ## Features
 
-- **Visual Timeline Roadmap**: 24-hour schedule view with tasks mapped to specific times
-  - Hour-by-hour time slots with glassmorphic cards
-  - Current time indicator (red line with glow)
-  - Current hour highlighting with pulse animation
-  - Unscheduled tasks section
-  - Priority color coding with left border accents
-  - Toggle between Timeline and List views
-- **List View**: Drag-and-drop task reordering with smooth animations
-- **Monthly Calendar View**: Bird's-eye perspective with task counts and completion rates
+- **Visual Timeline Roadmap**: 24-hour schedule view with tasks mapped to specific times and current time indicator
+- **List View**: Drag-and-drop task reordering 
+- **Monthly Calendar View**: Overview with task counts and completion rates
 - **Automated SMS Notifications**: Critical task reminders via Twilio
-- **Real-Time Progress Tracking**: Live completion percentages with gradient progress bars
-- **Productivity Streaks**: Gamified daily completion tracking with milestone badges
+- **Real-Time Progress Tracking**: Live completion percentages and analytics
+- **Productivity Streaks**: Gamified daily completion tracking
 - **Progressive Web App**: Offline functionality with background sync
-- **Theme Customization**: Light, Dark, and Custom themes with WCAG 2.1 AA compliance
-- **Analytics Dashboard**: Visual charts with glassmorphic cards showing productivity trends
-- **Responsive Design**: Seamless experience across desktop, tablet, and mobile
+- **Analytics Dashboard**: Productivity trends and statistics
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
 
 ## Technology Stack
 
 ### Frontend
 - Angular 17+
 - TypeScript 5+
-- Tailwind CSS (with custom design tokens)
-- Angular Material (with custom theme overrides)
+- Tailwind CSS
+- Angular Material
 - Chart.js
 - RxJS
 - Angular Service Worker (PWA)
-- **Modern CSS**: CSS Variables, Backdrop Filters, Animations
 
 ### Backend
 - Node.js 20+ LTS
 - Express.js 4.x
 - TypeScript
 - MySQL 8.0+
-- Knex.js (migrations & query building)
+- Knex.js (database migrations)
 - Objection.js (ORM)
 - JWT authentication
-- bcrypt password hashing
 - node-cron (scheduled jobs)
-- Winston (logging)
 - Twilio API (SMS)
 
 ## Prerequisites
@@ -265,16 +233,14 @@ npx knex migrate:make migration_name
 
 ## Security Features
 
-- HTTPS enforcement in production
 - JWT-based authentication
-- bcrypt password hashing
+- Bcrypt password hashing
+- HTTPS enforcement in production
 - SQL injection prevention via parameterized queries
 - XSS protection with input sanitization
-- CSRF protection
 - CORS policy enforcement
-- Rate limiting (100 requests/minute per user)
+- Rate limiting (100 requests/minute)
 - Helmet.js security headers
-- Strong password requirements
 
 ## Performance Optimizations
 
@@ -284,29 +250,25 @@ npx knex migrate:make migration_name
 - API response caching
 - Pagination (50 items per page)
 - Database indexes on frequently queried columns
-- Bundle size optimization with tree shaking
 
 ## Deployment
 
 ### Production Checklist
 
-1. Set `NODE_ENV=production`
-2. Configure production database credentials
-3. Set strong JWT secret
-4. Configure Twilio credentials
-5. Enable HTTPS
-6. Set appropriate CORS origins
-7. Configure log rotation
-8. Set up database backups
-9. Configure monitoring and alerting
-10. Run security audit: `npm audit`
+- Set `NODE_ENV=production`
+- Configure production database credentials
+- Set strong JWT secret
+- Configure Twilio credentials
+- Enable HTTPS
+- Set appropriate CORS origins
+- Set up database backups
+- Run security audit: `npm audit`
 
 ### Recommended Hosting
 
 - **Frontend**: Vercel, Netlify, AWS S3 + CloudFront
 - **Backend**: AWS EC2, DigitalOcean, Heroku
 - **Database**: AWS RDS, DigitalOcean Managed MySQL
-- **Monitoring**: Sentry, DataDog, New Relic
 
 ## License
 
