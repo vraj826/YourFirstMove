@@ -1,0 +1,106 @@
+<mat-sidenav-container class="h-screen" style="background: var(--color-background);">
+  <!-- Glassmorphism Sidebar -->
+  <mat-sidenav 
+    #sidenav 
+    mode="side" 
+    [opened]="sidenavOpened" 
+    class="w-64 glass-strong"
+    style="border-right: 1px solid var(--color-border);"
+  >
+    <div class="p-6 h-full flex flex-col">
+      <!-- Logo -->
+      <div class="mb-8">
+        <h2 class="text-gradient text-2xl font-bold">YourFirstMove</h2>
+      </div>
+      
+      <!-- Navigation -->
+      <nav class="flex-1 space-y-2">
+        <a 
+          routerLink="/dashboard/roadmap" 
+          routerLinkActive="active"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover-lift"
+          style="color: var(--color-text-secondary);"
+          [style.background]="isActive('/dashboard/roadmap') ? 'var(--color-primary-light)' : 'transparent'"
+          [style.color]="isActive('/dashboard/roadmap') ? 'var(--color-primary)' : 'var(--color-text-secondary)'"
+        >
+          <mat-icon>view_timeline</mat-icon>
+          <span class="font-medium">Daily Roadmap</span>
+        </a>
+        
+        <a 
+          routerLink="/dashboard/calendar" 
+          routerLinkActive="active"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover-lift"
+          style="color: var(--color-text-secondary);"
+          [style.background]="isActive('/dashboard/calendar') ? 'var(--color-primary-light)' : 'transparent'"
+          [style.color]="isActive('/dashboard/calendar') ? 'var(--color-primary)' : 'var(--color-text-secondary)'"
+        >
+          <mat-icon>calendar_month</mat-icon>
+          <span class="font-medium">Monthly Calendar</span>
+        </a>
+        
+        <a 
+          routerLink="/dashboard/analytics" 
+          routerLinkActive="active"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover-lift"
+          style="color: var(--color-text-secondary);"
+          [style.background]="isActive('/dashboard/analytics') ? 'var(--color-primary-light)' : 'transparent'"
+          [style.color]="isActive('/dashboard/analytics') ? 'var(--color-primary)' : 'var(--color-text-secondary)'"
+        >
+          <mat-icon>analytics</mat-icon>
+          <span class="font-medium">Analytics</span>
+        </a>
+        
+        <a 
+          routerLink="/dashboard/settings" 
+          routerLinkActive="active"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover-lift"
+          style="color: var(--color-text-secondary);"
+          [style.background]="isActive('/dashboard/settings') ? 'var(--color-primary-light)' : 'transparent'"
+          [style.color]="isActive('/dashboard/settings') ? 'var(--color-primary)' : 'var(--color-text-secondary)'"
+        >
+          <mat-icon>settings</mat-icon>
+          <span class="font-medium">Settings</span>
+        </a>
+      </nav>
+      
+      <!-- Logout Button -->
+      <div class="mt-auto pt-4" style="border-top: 1px solid var(--color-border);">
+        <button 
+          (click)="logout()"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover-lift w-full text-left"
+          style="color: var(--color-text-secondary);"
+        >
+          <mat-icon>logout</mat-icon>
+          <span class="font-medium">Logout</span>
+        </button>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <!-- Main Content -->
+  <mat-sidenav-content>
+    <!-- Modern Header -->
+    <header class="glass sticky top-0 z-10" style="border-bottom: 1px solid var(--color-border);">
+      <div class="flex items-center justify-between px-6 py-4">
+        <button 
+          (click)="sidenav.toggle()"
+          class="btn btn-ghost btn-sm"
+        >
+          <mat-icon>menu</mat-icon>
+        </button>
+        
+        <div class="flex items-center gap-4">
+          <span *ngIf="currentUser" class="text-sm font-medium" style="color: var(--color-text-secondary);">
+            Welcome, <span style="color: var(--color-text-primary);">{{ currentUser.name }}</span>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="p-6 animate-fade-in">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

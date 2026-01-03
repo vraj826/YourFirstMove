@@ -1,0 +1,100 @@
+<div class="max-w-7xl mx-auto animate-fade-in">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-4xl font-bold mb-2" style="color: var(--color-text-primary);">Monthly Calendar</h1>
+      <p style="color: var(--color-text-secondary);">View your tasks across the month</p>
+    </div>
+    
+    <div class="glass flex items-center gap-2 p-1 rounded-lg">
+      <button 
+        (click)="previousMonth()" 
+        matTooltip="Previous month"
+        class="btn btn-ghost btn-sm"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button 
+        (click)="goToToday()"
+        class="btn btn-primary btn-sm"
+      >
+        Today
+      </button>
+      <button 
+        (click)="nextMonth()" 
+        matTooltip="Next month"
+        class="btn btn-ghost btn-sm"
+      >
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Calendar Card -->
+  <div class="glass-strong card animate-scale-in">
+    <div class="mb-6">
+      <h2 class="text-3xl font-bold text-gradient">{{ monthName }} {{ year }}</h2>
+    </div>
+
+    <!-- Loading State -->
+    <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+    <!-- Calendar Grid -->
+    <div *ngIf="!loading" class="calendar-grid">
+      <!-- Week day headers -->
+      <div *ngFor="let day of weekDays" class="calendar-header">
+        {{ day }}
+      </div>
+
+      <!-- Calendar days -->
+      <div *ngFor="let day of calendarDays" 
+           [ngClass]="getDayClasses(day)"
+           (click)="onDayClick(day)"
+           class="calendar-day">
+        <div class="day-number">{{ day.date.getDate() }}</div>
+        
+        <div *ngIf="day.totalCount > 0" class="task-info">
+          <div class="task-count">
+            <mat-icon class="text-xs">task</mat-icon>
+            <span>{{ day.totalCount }}</span>
+          </div>
+          
+          <div class="completion-badge" [ngClass]="getCompletionBadgeClass(day.completionPercentage)">
+            {{ day.completionPercentage }}%
+          </div>
+        </div>
+
+        <div *ngIf="day.tasks.length > 0" class="task-preview">
+          <div *ngFor="let task of day.tasks.slice(0, 2)" 
+               class="task-dot"
+               [ngClass]="getTaskDotClass(task.priority, task.is_completed)"
+               [matTooltip]="task.title">
+          </div>
+          <span *ngIf="day.tasks.length > 2" class="text-xs" style="color: var(--color-text-tertiary);">
+            +{{ day.tasks.length - 2 }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="mt-8 pt-6 flex flex-wrap gap-6 text-sm" style="border-top: 1px solid var(--color-border);">
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 rounded-full" style="background: var(--color-success);"></div>
+        <span style="color: var(--color-text-secondary);">Low Priority</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 rounded-full" style="background: var(--color-warning);"></div>
+        <span style="color: var(--color-text-secondary);">Medium Priority</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 rounded-full" style="background: #f97316;"></div>
+        <span style="color: var(--color-text-secondary);">High Priority</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 rounded-full" style="background: var(--color-error);"></div>
+        <span style="color: var(--color-text-secondary);">Critical Priority</span>
+      </div>
+    </div>
+  </div>
+</div>

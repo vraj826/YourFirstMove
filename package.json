@@ -1,0 +1,24 @@
+{
+  "name": "yourfirstmove",
+  "version": "1.0.0",
+  "description": "Production-ready full-stack productivity application",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "migrate:latest": "cd backend && npm run migrate:latest",
+    "migrate:rollback": "cd backend && npm run migrate:rollback"
+  },
+  "keywords": ["productivity", "task-management", "angular", "nodejs", "mysql"],
+  "author": "",
+  "license": "MIT"
+}

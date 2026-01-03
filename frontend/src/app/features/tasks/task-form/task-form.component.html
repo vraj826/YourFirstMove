@@ -1,0 +1,152 @@
+<div class="modern-dialog">
+  <!-- Header -->
+  <div class="dialog-header">
+    <h2 class="text-2xl font-bold text-gradient">
+      {{ isEditMode ? 'Edit Task' : 'Create New Task' }}
+    </h2>
+    <button (click)="onCancel()" class="btn btn-ghost btn-sm" [disabled]="loading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="dialog-content">
+    <form [formGroup]="taskForm" class="space-y-5">
+      <!-- Title -->
+      <div>
+        <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+          Task Title *
+        </label>
+        <input 
+          type="text" 
+          formControlName="title" 
+          placeholder="Enter task title"
+          class="input"
+        />
+        <p *ngIf="taskForm.get('title')?.touched && taskForm.get('title')?.hasError('required')" 
+           class="text-xs mt-1" 
+           style="color: var(--color-error);">
+          Title is required
+        </p>
+        <p *ngIf="taskForm.get('title')?.touched && taskForm.get('title')?.hasError('maxlength')" 
+           class="text-xs mt-1" 
+           style="color: var(--color-error);">
+          Title must be less than 255 characters
+        </p>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+          Description
+        </label>
+        <textarea 
+          formControlName="description" 
+          rows="3" 
+          placeholder="Enter task description (optional)"
+          class="input"
+          style="resize: vertical; min-height: 80px;"
+        ></textarea>
+      </div>
+
+      <!-- Date and Time -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+            Due Date
+          </label>
+          <input 
+            type="date" 
+            formControlName="dueDate"
+            class="input"
+          />
+          <p class="text-xs mt-1" style="color: var(--color-text-tertiary);">
+            Defaults to today if not set
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+            Start Time
+          </label>
+          <input 
+            type="time" 
+            formControlName="dueTime"
+            class="input"
+          />
+          <p class="text-xs mt-1" style="color: var(--color-text-tertiary);">
+            When to start
+          </p>
+        </div>
+      </div>
+
+      <!-- End Time -->
+      <div>
+        <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+          End Time
+        </label>
+        <input 
+          type="time" 
+          formControlName="endTime"
+          class="input"
+        />
+        <p class="text-xs mt-1" style="color: var(--color-text-tertiary);">
+          When to finish (optional)
+        </p>
+      </div>
+
+      <!-- Priority -->
+      <div>
+        <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+          Priority *
+        </label>
+        <select formControlName="priority" class="input">
+          <option *ngFor="let priority of priorities" [value]="priority.value">
+            {{ priority.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Critical Checkbox -->
+      <div class="flex items-start gap-3 p-4 rounded-lg" style="background: var(--color-surface);">
+        <input 
+          type="checkbox" 
+          formControlName="isCritical" 
+          id="isCritical"
+          class="mt-1"
+          style="width: 18px; height: 18px; cursor: pointer;"
+        />
+        <label for="isCritical" class="flex-1 cursor-pointer">
+          <div class="font-medium mb-1" style="color: var(--color-text-primary);">
+            Mark as Critical
+          </div>
+          <div class="text-sm" style="color: var(--color-text-secondary);">
+            Enable SMS notifications for this task
+          </div>
+        </label>
+      </div>
+    </form>
+  </div>
+
+  <!-- Actions -->
+  <div class="dialog-actions">
+    <button 
+      (click)="onCancel()" 
+      class="btn btn-secondary"
+      [disabled]="loading"
+    >
+      Cancel
+    </button>
+    <button 
+      (click)="onSubmit()" 
+      class="btn btn-primary"
+      [disabled]="loading || !taskForm.valid"
+    >
+      <span *ngIf="!loading">{{ isEditMode ? 'Update Task' : 'Create Task' }}</span>
+      <span *ngIf="loading" class="flex items-center gap-2">
+        <span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span>
+        {{ isEditMode ? 'Updating...' : 'Creating...' }}
+      </span>
+    </button>
+  </div>
+</div>

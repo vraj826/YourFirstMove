@@ -1,0 +1,22 @@
+:host {
+  display: block;
+}
+
+.stat-card {
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.stat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+mat-form-field {
+  width: 200px;
+}

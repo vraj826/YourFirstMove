@@ -1,0 +1,185 @@
+<div class="max-w-7xl mx-auto animate-fade-in">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-4xl font-bold mb-2" style="color: var(--color-text-primary);">Analytics Dashboard</h1>
+      <p style="color: var(--color-text-secondary);">Track your productivity and insights</p>
+    </div>
+    
+    <div class="glass flex items-center gap-2 p-1 rounded-lg">
+      <select 
+        [(ngModel)]="selectedPeriod" 
+        (change)="onPeriodChange()"
+        class="input"
+        style="min-width: 150px;"
+      >
+        <option *ngFor="let period of periods" [value]="period.value">
+          {{ period.label }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <!-- Stats Grid -->
+  <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-slide-up">
+    <!-- Total Tasks Card -->
+    <div class="glass-strong card text-center hover-lift">
+      <mat-icon class="text-6xl mb-3" style="color: var(--color-primary);">task_alt</mat-icon>
+      <h3 class="text-4xl font-bold mb-2 text-gradient">{{ statistics?.totalTasks || 0 }}</h3>
+      <p style="color: var(--color-text-secondary);">Total Tasks</p>
+    </div>
+
+    <!-- Completed Tasks Card -->
+    <div class="glass-strong card text-center hover-lift">
+      <mat-icon class="text-6xl mb-3" style="color: var(--color-success);">check_circle</mat-icon>
+      <h3 class="text-4xl font-bold mb-2" style="color: var(--color-success);">{{ statistics?.completedTasks || 0 }}</h3>
+      <p style="color: var(--color-text-secondary);">Completed</p>
+    </div>
+
+    <!-- Pending Tasks Card -->
+    <div class="glass-strong card text-center hover-lift">
+      <mat-icon class="text-6xl mb-3" style="color: var(--color-warning);">pending</mat-icon>
+      <h3 class="text-4xl font-bold mb-2" style="color: var(--color-warning);">{{ statistics?.pendingTasks || 0 }}</h3>
+      <p style="color: var(--color-text-secondary);">Pending</p>
+    </div>
+
+    <!-- Critical Tasks Card -->
+    <div class="glass-strong card text-center hover-lift">
+      <mat-icon class="text-6xl mb-3" style="color: var(--color-error);">priority_high</mat-icon>
+      <h3 class="text-4xl font-bold mb-2" style="color: var(--color-error);">{{ statistics?.criticalTasks || 0 }}</h3>
+      <p style="color: var(--color-text-secondary);">Critical</p>
+    </div>
+  </div>
+
+  <!-- Charts Grid -->
+  <div *ngIf="!loading" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 animate-scale-in">
+    <!-- Completion Rate Card -->
+    <div class="glass-strong card">
+      <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text-primary);">Completion Rate</h2>
+      
+      <div class="text-center py-8">
+        <div class="relative inline-block">
+          <svg class="transform -rotate-90" width="200" height="200">
+            <circle
+              cx="100"
+              cy="100"
+              r="80"
+              stroke="var(--color-border)"
+              stroke-width="20"
+              fill="none"
+            />
+            <circle
+              cx="100"
+              cy="100"
+              r="80"
+              [attr.stroke]="getStrokeColor()"
+              stroke-width="20"
+              fill="none"
+              [attr.stroke-dasharray]="502.4"
+              [attr.stroke-dashoffset]="getStrokeDashoffset()"
+              stroke-linecap="round"
+              class="transition-all duration-500"
+            />
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-center">
+              <div class="text-5xl font-bold text-gradient">{{ completionRate?.percentage || 0 }}%</div>
+              <div class="text-sm mt-2" style="color: var(--color-text-secondary);">Complete</div>
+            </div>
+          </div>
+        </div>
+        <p class="mt-6" style="color: var(--color-text-secondary);">
+          {{ completionRate?.completedTasks || 0 }} of {{ completionRate?.totalTasks || 0 }} tasks completed
+        </p>
+      </div>
+    </div>
+
+    <!-- Productivity Streak Card -->
+    <div class="glass-strong card">
+      <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text-primary);">Productivity Streak</h2>
+      
+      <div class="text-center py-8">
+        <mat-icon class="text-8xl" style="color: var(--color-warning);">local_fire_department</mat-icon>
+        <h2 class="text-6xl font-bold mt-4 text-gradient">{{ currentStreak }}</h2>
+        <p class="text-xl mt-2" style="color: var(--color-text-secondary);">Day{{ currentStreak !== 1 ? 's' : '' }}</p>
+        <p class="text-sm mt-4" style="color: var(--color-text-tertiary);">{{ getStreakMessage() }}</p>
+        
+        <div class="mt-8 space-y-3">
+          <div class="flex justify-between items-center px-4 py-3 rounded-lg" style="background: var(--color-surface);">
+            <span style="color: var(--color-text-secondary);">Current Streak</span>
+            <span class="font-semibold" style="color: var(--color-text-primary);">{{ currentStreak }} days</span>
+          </div>
+          <div class="flex justify-between items-center px-4 py-3 rounded-lg" style="background: var(--color-surface);">
+            <span style="color: var(--color-text-secondary);">Avg. Completion Time</span>
+            <span class="font-semibold" style="color: var(--color-text-primary);">{{ statistics?.averageCompletionTime || 0 }}h</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insights Card -->
+  <div *ngIf="!loading" class="glass-strong card animate-scale-in">
+    <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text-primary);">Insights & Recommendations</h2>
+    
+    <div class="space-y-4">
+      <div class="flex items-start gap-3 p-4 rounded-lg" 
+           *ngIf="statistics && statistics.pendingTasks > 5"
+           style="background: var(--color-primary-light); border-left: 3px solid var(--color-primary);">
+        <mat-icon style="color: var(--color-primary);">info</mat-icon>
+        <div class="flex-1">
+          <h4 class="font-semibold mb-1" style="color: var(--color-text-primary);">High Pending Tasks</h4>
+          <p class="text-sm" style="color: var(--color-text-secondary);">
+            You have {{ statistics.pendingTasks }} pending tasks. Consider prioritizing them to improve your completion rate.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-3 p-4 rounded-lg" 
+           *ngIf="currentStreak >= 7"
+           style="background: rgba(34, 197, 94, 0.1); border-left: 3px solid var(--color-success);">
+        <mat-icon style="color: var(--color-success);">celebration</mat-icon>
+        <div class="flex-1">
+          <h4 class="font-semibold mb-1" style="color: var(--color-text-primary);">Great Streak!</h4>
+          <p class="text-sm" style="color: var(--color-text-secondary);">
+            You've maintained a {{ currentStreak }}-day streak! Keep up the excellent work!
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-3 p-4 rounded-lg" 
+           *ngIf="statistics && statistics.criticalTasks > 0"
+           style="background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--color-error);">
+        <mat-icon style="color: var(--color-error);">warning</mat-icon>
+        <div class="flex-1">
+          <h4 class="font-semibold mb-1" style="color: var(--color-text-primary);">Critical Tasks Pending</h4>
+          <p class="text-sm" style="color: var(--color-text-secondary);">
+            You have {{ statistics.criticalTasks }} critical tasks that need attention. Don't forget to complete them!
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-3 p-4 rounded-lg" 
+           *ngIf="completionRate && completionRate.percentage < 50"
+           style="background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--color-warning);">
+        <mat-icon style="color: var(--color-warning);">lightbulb</mat-icon>
+        <div class="flex-1">
+          <h4 class="font-semibold mb-1" style="color: var(--color-text-primary);">Boost Your Productivity</h4>
+          <p class="text-sm" style="color: var(--color-text-secondary);">
+            Your completion rate is below 50%. Try breaking down large tasks into smaller, manageable ones.
+          </p>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!statistics || (statistics.pendingTasks <= 5 && currentStreak < 7 && statistics.criticalTasks === 0 && (!completionRate || completionRate.percentage >= 50))"
+           class="text-center py-8">
+        <mat-icon class="text-6xl mb-4" style="color: var(--color-text-tertiary);">insights</mat-icon>
+        <p style="color: var(--color-text-secondary);">No insights available at the moment. Keep working on your tasks!</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+mat-sidenav-container {
+  height: 100%;
+}
+
+mat-sidenav {
+  background: var(--surface-color);
+}
+
+.active {
+  background-color: rgba(0, 0, 0, 0.04);
+}

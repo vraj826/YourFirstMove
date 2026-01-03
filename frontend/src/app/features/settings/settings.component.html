@@ -1,0 +1,181 @@
+<div class="max-w-4xl mx-auto animate-fade-in">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-4xl font-bold mb-2" style="color: var(--color-text-primary);">Settings</h1>
+    <p style="color: var(--color-text-secondary);">Manage your account and preferences</p>
+  </div>
+
+  <!-- Profile Settings -->
+  <div class="glass-strong card mb-6 animate-slide-up">
+    <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text-primary);">Profile Information</h2>
+    
+    <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="space-y-5">
+      <div>
+        <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+          Full Name
+        </label>
+        <input 
+          type="text" 
+          formControlName="name" 
+          placeholder="John Doe"
+          class="input"
+        />
+        <p *ngIf="profileForm.get('name')?.touched && profileForm.get('name')?.hasError('required')" 
+           class="text-xs mt-1" 
+           style="color: var(--color-error);">
+          Name is required
+        </p>
+        <p *ngIf="profileForm.get('name')?.touched && profileForm.get('name')?.hasError('minlength')" 
+           class="text-xs mt-1" 
+           style="color: var(--color-error);">
+          Name must be at least 2 characters
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+          Phone Number
+        </label>
+        <input 
+          type="tel" 
+          formControlName="phoneNumber" 
+          placeholder="+1234567890"
+          class="input"
+        />
+        <p class="text-xs mt-1" style="color: var(--color-text-tertiary);">
+          Required for SMS notifications
+        </p>
+        <p *ngIf="profileForm.get('phoneNumber')?.touched && profileForm.get('phoneNumber')?.hasError('pattern')" 
+           class="text-xs mt-1" 
+           style="color: var(--color-error);">
+          Please enter a valid phone number
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+          Email Address
+        </label>
+        <input 
+          type="email" 
+          [value]="currentUser?.email" 
+          disabled
+          class="input opacity-60 cursor-not-allowed"
+        />
+        <p class="text-xs mt-1" style="color: var(--color-text-tertiary);">
+          Email cannot be changed
+        </p>
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="loading || !profileForm.valid"
+      >
+        <span *ngIf="!loading">Update Profile</span>
+        <span *ngIf="loading" class="flex items-center gap-2">
+          <span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span>
+          Updating...
+        </span>
+      </button>
+    </form>
+  </div>
+
+  <!-- Theme Settings -->
+  <div class="glass-strong card mb-6 animate-slide-up" style="animation-delay: 0.1s;">
+    <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text-primary);">Appearance</h2>
+    
+    <div>
+      <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+        Select Theme
+      </label>
+      <select 
+        [(ngModel)]="currentTheme" 
+        (change)="changeTheme(currentTheme)"
+        class="input"
+      >
+        <option *ngFor="let theme of themes" [value]="theme">
+          {{ theme | titlecase }}
+        </option>
+      </select>
+    </div>
+
+    <div class="mt-4 p-4 rounded-lg flex items-start gap-3" style="background: var(--color-primary-light);">
+      <mat-icon style="color: var(--color-primary);">info</mat-icon>
+      <p class="text-sm" style="color: var(--color-text-secondary);">
+        Your theme preference is saved and will be applied across all devices.
+      </p>
+    </div>
+  </div>
+
+  <!-- Notification Settings -->
+  <div class="glass-strong card mb-6 animate-slide-up" style="animation-delay: 0.2s;">
+    <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text-primary);">Notifications</h2>
+    
+    <div class="space-y-6">
+      <div class="flex items-center justify-between p-4 rounded-lg" style="background: var(--color-surface);">
+        <div class="flex-1">
+          <h4 class="font-medium mb-1" style="color: var(--color-text-primary);">SMS Notifications</h4>
+          <p class="text-sm" style="color: var(--color-text-secondary);">Receive text messages for critical tasks</p>
+        </div>
+        <mat-slide-toggle 
+          [checked]="preferences?.notification_enabled"
+          (change)="updateNotificationEnabled($event.checked)"
+          color="primary">
+        </mat-slide-toggle>
+      </div>
+
+      <div *ngIf="preferences?.notification_enabled">
+        <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+          Notification Timing
+        </label>
+        <select 
+          [value]="preferences?.notification_timing"
+          (change)="updateNotificationTiming($any($event.target).value)"
+          class="input"
+        >
+          <option *ngFor="let timing of notificationTimings" [value]="timing.value">
+            {{ timing.label }} before due time
+          </option>
+        </select>
+        <p class="text-xs mt-1" style="color: var(--color-text-tertiary);">
+          When to receive notifications before task due time
+        </p>
+      </div>
+
+      <div class="p-4 rounded-lg flex items-start gap-3" 
+           *ngIf="!currentUser?.phone_number"
+           style="background: var(--color-primary-light); border-left: 3px solid var(--color-primary);">
+        <mat-icon style="color: var(--color-primary);">info</mat-icon>
+        <div>
+          <h4 class="font-medium mb-1" style="color: var(--color-text-primary);">Phone Number Required</h4>
+          <p class="text-sm" style="color: var(--color-text-secondary);">
+            Add your phone number in the profile section above to enable SMS notifications.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Section -->
+  <div class="glass-strong card animate-slide-up" style="animation-delay: 0.3s;">
+    <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text-primary);">About YourFirstMove</h2>
+    
+    <div class="space-y-4">
+      <div class="flex justify-between items-center p-4 rounded-lg" style="background: var(--color-surface);">
+        <span style="color: var(--color-text-secondary);">Version</span>
+        <span class="font-medium" style="color: var(--color-text-primary);">1.0.0</span>
+      </div>
+      
+      <div class="flex justify-between items-center p-4 rounded-lg" style="background: var(--color-surface);">
+        <span style="color: var(--color-text-secondary);">Account Created</span>
+        <span class="font-medium" style="color: var(--color-text-primary);">{{ currentUser?.created_at | date:'mediumDate' }}</span>
+      </div>
+      
+      <div class="flex justify-between items-center p-4 rounded-lg" style="background: var(--color-surface);">
+        <span style="color: var(--color-text-secondary);">User ID</span>
+        <span class="font-medium font-mono text-sm" style="color: var(--color-text-primary);">{{ currentUser?.id }}</span>
+      </div>
+    </div>
+  </div>
+</div>
