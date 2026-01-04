@@ -158,4 +158,32 @@ router.get('/monthly/:month', async (req: AuthRequest, res, next) => {
   }
 });
 
+// Duplicate day's schedule to another date
+router.post('/duplicate-day', async (req: AuthRequest, res, next) => {
+  try {
+    const { sourceDate, targetDate } = req.body;
+    
+    if (!sourceDate || !targetDate) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'sourceDate and targetDate are required' }
+      });
+    }
+    
+    const duplicatedTasks = await taskService.duplicateDaySchedule(
+      req.userId!,
+      sourceDate,
+      targetDate
+    );
+
+    res.json({
+      success: true,
+      data: { tasks: duplicatedTasks, count: duplicatedTasks.length },
+      message: `Successfully duplicated ${duplicatedTasks.length} tasks`
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

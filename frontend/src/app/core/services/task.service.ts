@@ -89,6 +89,15 @@ export class TaskService {
     return this.http.get<{ success: boolean; data: { tasks: Task[] } }>(`${this.API_URL}/monthly/${month}`);
   }
 
+  duplicateDaySchedule(sourceDate: string, targetDate: string): Observable<{ success: boolean; data: { tasks: Task[]; count: number }; message: string }> {
+    return this.http.post<{ success: boolean; data: { tasks: Task[]; count: number }; message: string }>(
+      `${this.API_URL}/duplicate-day`,
+      { sourceDate, targetDate }
+    ).pipe(
+      tap(() => this.refreshTasks())
+    );
+  }
+
   private refreshTasks(): void {
     this.getTasks().subscribe();
   }

@@ -230,7 +230,7 @@ export class TaskService {
       
       const updatedTask = await task.$query().patchAndFetch({
         is_completed: false,
-        completed_at: null,
+        completed_at: undefined as any,
       });
 
       // Update productivity metrics
@@ -298,6 +298,47 @@ export class TaskService {
       return tasks;
     } catch (error) {
       logger.error('Tasks by month retrieval error:', error);
+      throw error;
+    }
+  }
+
+  async duplicateDaySchedule(userId: number, sourceDate: string, targetDate: string): Promise<Task[]> {
+    try {
+      // Get all tasks from source date
+      const sourceTasks = await Task.query()
+        .where('user_id', userId)
+        .whereRaw('DATE(due_date) = ?', [sourceDate])
+        .orderBy('due_time', 'asc');
+
+      if (sourceTasks.length === 0) {
+        logger.info(`No tasks found for source date: ${sourceDate}`);
+        return [];
+      }
+
+      // Create duplicates for target date
+      const duplicatedTasks: Task[] = [];
+      
+      for (const sourceTask of sourceTasks) {
+        const newTask = await Task.query().insert({
+          user_id: userId,
+          title: sourceTask.title,
+          description: sourceTask.description || null,
+          due_date: targetDate,
+          due_time: sourceTask.due_time || null,
+          end_time: sourceTask.end_time || null,
+          priority: sourceTask.priority,
+          is_critical: Boolean(sourceTask.is_critical), // Ensure boolean
+          is_completed: false, // New tasks start as incomplete
+          display_order: sourceTask.display_order || 0,
+        });
+        
+        duplicatedTasks.push(newTask);
+      }
+
+      logger.info(`Duplicated ${duplicatedTasks.length} tasks from ${sourceDate} to ${targetDate}`);
+      return duplicatedTasks;
+    } catch (error) {
+      logger.error('Duplicate day schedule error:', error);
       throw error;
     }
   }

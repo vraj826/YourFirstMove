@@ -60,13 +60,24 @@
     </div>
 
     <!-- Add Task Button -->
-    <button 
-      (click)="openTaskDialog()"
-      class="btn btn-primary"
-    >
-      <mat-icon>add</mat-icon>
-      Add New Task
-    </button>
+    <div class="flex gap-3">
+      <button 
+        (click)="openDuplicateDialog()"
+        class="btn btn-secondary"
+        matTooltip="Copy schedule from another day"
+      >
+        <mat-icon>content_copy</mat-icon>
+        Duplicate Schedule
+      </button>
+      
+      <button 
+        (click)="openTaskDialog()"
+        class="btn btn-primary"
+      >
+        <mat-icon>add</mat-icon>
+        Add New Task
+      </button>
+    </div>
   </div>
 
   <!-- Loading State -->
@@ -314,4 +325,79 @@
   >
     <mat-icon>add</mat-icon>
   </button>
+
+  <!-- Duplicate Schedule Dialog -->
+  <div *ngIf="showDuplicateDialog" class="fixed inset-0 z-50 flex items-center justify-center" style="background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);">
+    <div class="glass-strong card animate-scale-in" style="max-width: 500px; width: 90%; padding: 2rem;">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gradient">Duplicate Schedule</h2>
+        <button (click)="closeDuplicateDialog()" class="btn btn-ghost btn-sm" [disabled]="duplicating">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="space-y-5">
+        <p style="color: var(--color-text-secondary);">
+          Copy all tasks from one day to another. This is useful for repeating schedules.
+        </p>
+
+        <div>
+          <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+            Copy From (Source Date)
+          </label>
+          <input 
+            type="date" 
+            [(ngModel)]="duplicateSourceDate"
+            class="input"
+            [disabled]="duplicating"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-2" style="color: var(--color-text-primary);">
+            Copy To (Target Date)
+          </label>
+          <input 
+            type="date" 
+            [(ngModel)]="duplicateTargetDate"
+            class="input"
+            [disabled]="duplicating"
+          />
+        </div>
+
+        <div class="p-4 rounded-lg" style="background: var(--color-surface); border-left: 4px solid var(--color-primary);">
+          <div class="flex items-start gap-2">
+            <mat-icon style="color: var(--color-primary); margin-top: 2px;">info</mat-icon>
+            <div class="text-sm" style="color: var(--color-text-secondary);">
+              All tasks will be copied with the same times and settings, but marked as incomplete.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-3 mt-6">
+        <button 
+          (click)="closeDuplicateDialog()" 
+          class="btn btn-secondary flex-1"
+          [disabled]="duplicating"
+        >
+          Cancel
+        </button>
+        <button 
+          (click)="duplicateSchedule()" 
+          class="btn btn-primary flex-1"
+          [disabled]="duplicating || !duplicateSourceDate || !duplicateTargetDate"
+        >
+          <span *ngIf="!duplicating" class="flex items-center gap-2">
+            <mat-icon>content_copy</mat-icon>
+            Duplicate
+          </span>
+          <span *ngIf="duplicating" class="flex items-center gap-2">
+            <span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span>
+            Duplicating...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

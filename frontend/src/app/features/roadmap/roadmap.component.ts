@@ -27,6 +27,12 @@ export class RoadmapComponent implements OnInit {
   viewMode = 'timeline' as string; // Explicit type assertion
   timeSlots: TimeSlot[] = [];
   currentTime = new Date();
+  
+  // Duplicate schedule state
+  showDuplicateDialog = false;
+  duplicateSourceDate = '';
+  duplicateTargetDate = '';
+  duplicating = false;
 
   constructor(
     private taskService: TaskService,
@@ -358,5 +364,48 @@ export class RoadmapComponent implements OnInit {
 
   isTimelineView(): boolean {
     return this.viewMode === 'timeline';
+  }
+
+  openDuplicateDialog(): void {
+    this.duplicateSourceDate = this.selectedDate;
+    this.duplicateTargetDate = this.selectedDate;
+    this.showDuplicateDialog = true;
+  }
+
+  closeDuplicateDialog(): void {
+    this.showDuplicateDialog = false;
+    this.duplicateSourceDate = '';
+    this.duplicateTargetDate = '';
+  }
+
+  duplicateSchedule(): void {
+    if (!this.duplicateSourceDate || !this.duplicateTargetDate) {
+      this.snackBar.open('Please select both source and target dates', 'Close', { duration: 3000 });
+      return;
+    }
+
+    if (this.duplicateSourceDate === this.duplicateTargetDate) {
+      this.snackBar.open('Source and target dates must be different', 'Close', { duration: 3000 });
+      return;
+    }
+
+    this.duplicating = true;
+    this.taskService.duplicateDaySchedule(this.duplicateSourceDate, this.duplicateTargetDate).subscribe({
+      next: (response) => {
+        this.snackBar.open(response.message || `Duplicated ${response.data.count} tasks successfully!`, 'Close', { duration: 3000 });
+        this.closeDuplicateDialog();
+        this.duplicating = false;
+        
+        // If target date is the currently selected date, reload tasks
+        if (this.duplicateTargetDate === this.selectedDate) {
+          this.loadTasks();
+        }
+      },
+      error: (error) => {
+        console.error('Error duplicating schedule:', error);
+        this.snackBar.open('Failed to duplicate schedule: ' + (error.error?.error?.message || error.message), 'Close', { duration: 5000 });
+        this.duplicating = false;
+      }
+    });
   }
 }
