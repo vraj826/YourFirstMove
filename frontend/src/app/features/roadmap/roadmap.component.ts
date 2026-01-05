@@ -367,9 +367,19 @@ export class RoadmapComponent implements OnInit {
   }
 
   openDuplicateDialog(): void {
+    console.log('openDuplicateDialog called');
+    // Set source date to currently selected date
     this.duplicateSourceDate = this.selectedDate;
-    this.duplicateTargetDate = this.selectedDate;
+    // Set target date to tomorrow by default
+    const tomorrow = new Date(this.selectedDate);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    this.duplicateTargetDate = tomorrow.toISOString().split('T')[0];
     this.showDuplicateDialog = true;
+    
+    console.log('Opened duplicate dialog:');
+    console.log('  showDuplicateDialog:', this.showDuplicateDialog);
+    console.log('  Source date:', this.duplicateSourceDate);
+    console.log('  Target date:', this.duplicateTargetDate);
   }
 
   closeDuplicateDialog(): void {
@@ -379,6 +389,10 @@ export class RoadmapComponent implements OnInit {
   }
 
   duplicateSchedule(): void {
+    console.log('duplicateSchedule called');
+    console.log('  duplicateSourceDate:', this.duplicateSourceDate, 'type:', typeof this.duplicateSourceDate);
+    console.log('  duplicateTargetDate:', this.duplicateTargetDate, 'type:', typeof this.duplicateTargetDate);
+    
     if (!this.duplicateSourceDate || !this.duplicateTargetDate) {
       this.snackBar.open('Please select both source and target dates', 'Close', { duration: 3000 });
       return;
@@ -389,10 +403,18 @@ export class RoadmapComponent implements OnInit {
       return;
     }
 
+    console.log('Duplicating schedule:');
+    console.log('  Source date:', this.duplicateSourceDate);
+    console.log('  Target date:', this.duplicateTargetDate);
+
     this.duplicating = true;
     this.taskService.duplicateDaySchedule(this.duplicateSourceDate, this.duplicateTargetDate).subscribe({
       next: (response) => {
-        this.snackBar.open(response.message || `Duplicated ${response.data.count} tasks successfully!`, 'Close', { duration: 3000 });
+        console.log('Duplicate response:', response);
+        const message = response.data.count > 0 
+          ? `Successfully duplicated ${response.data.count} tasks!`
+          : 'No tasks found on the source date to duplicate.';
+        this.snackBar.open(message, 'Close', { duration: 3000 });
         this.closeDuplicateDialog();
         this.duplicating = false;
         
@@ -403,6 +425,7 @@ export class RoadmapComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error duplicating schedule:', error);
+        console.error('Error details:', error.error);
         this.snackBar.open('Failed to duplicate schedule: ' + (error.error?.error?.message || error.message), 'Close', { duration: 5000 });
         this.duplicating = false;
       }

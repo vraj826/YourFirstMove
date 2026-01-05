@@ -46,9 +46,22 @@ export class MonthlyCalendarComponent implements OnInit {
     const year = this.currentDate.getFullYear();
     const monthString = `${year}-${String(month + 1).padStart(2, '0')}`;
 
+    console.log('Loading calendar for month:', monthString);
+
     this.taskService.getTasksByMonth(monthString).subscribe({
       next: (response) => {
         const tasks = response.data.tasks;
+        console.log('Received tasks:', tasks.length);
+        
+        // Log ALL task dates to see what we have
+        const tasksByDate = tasks.reduce((acc: any, task) => {
+          const date = task.due_date.split('T')[0];
+          if (!acc[date]) acc[date] = [];
+          acc[date].push(task.title);
+          return acc;
+        }, {});
+        console.log('All tasks by date:', tasksByDate);
+        
         this.generateCalendarDays(year, month, tasks);
         this.loading = false;
       },
@@ -63,6 +76,8 @@ export class MonthlyCalendarComponent implements OnInit {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
+
+    console.log('Generating calendar for:', { year, month: month + 1, daysInMonth });
 
     this.calendarDays = [];
 
@@ -85,6 +100,14 @@ export class MonthlyCalendarComponent implements OnInit {
       const date = new Date(year, month + 1, day);
       this.calendarDays.push(this.createCalendarDay(date, false, tasks));
     }
+
+    // Log summary
+    const daysWithTasks = this.calendarDays.filter(d => d.totalCount > 0);
+    console.log('Calendar generated:', {
+      totalDays: this.calendarDays.length,
+      daysWithTasks: daysWithTasks.length,
+      taskDistribution: daysWithTasks.map(d => ({ date: d.dateString, tasks: d.totalCount }))
+    });
   }
 
   createCalendarDay(date: Date, isCurrentMonth: boolean, allTasks: Task[]): CalendarDay {
@@ -100,9 +123,25 @@ export class MonthlyCalendarComponent implements OnInit {
     
     // Filter tasks for this date - compare date strings
     const dayTasks = allTasks.filter(t => {
-      const taskDate = t.due_date.split('T')[0]; // Remove time component if present
-      return taskDate === dateString;
+      // Ensure we're comparing just the date part (YYYY-MM-DD)
+      let taskDate = t.due_date;
+      
+      // If the date includes time or timezone info, extract just the date part
+      if (taskDate.includes('T')) {
+        taskDate = taskDate.split('T')[0];
+      } else if (taskDate.includes(' ')) {
+        taskDate = taskDate.split(' ')[0];
+      }
+      
+      const matches = taskDate === dateString;
+      
+      return matches;
     });
+    
+    // Log if this day has tasks
+    if (dayTasks.length > 0) {
+      console.log(`Date ${dateString} has ${dayTasks.length} tasks:`, dayTasks.map(t => t.title));
+    }
     
     const completedCount = dayTasks.filter(t => t.is_completed).length;
     const totalCount = dayTasks.length;

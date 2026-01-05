@@ -304,14 +304,24 @@ export class TaskService {
 
   async duplicateDaySchedule(userId: number, sourceDate: string, targetDate: string): Promise<Task[]> {
     try {
+      logger.info(`Duplicating schedule from ${sourceDate} to ${targetDate} for user ${userId}`);
+      
+      // Normalize dates to YYYY-MM-DD format
+      const normalizedSourceDate = sourceDate.split('T')[0];
+      const normalizedTargetDate = targetDate.split('T')[0];
+      
+      logger.info(`Normalized dates - source: ${normalizedSourceDate}, target: ${normalizedTargetDate}`);
+      
       // Get all tasks from source date
       const sourceTasks = await Task.query()
         .where('user_id', userId)
-        .whereRaw('DATE(due_date) = ?', [sourceDate])
+        .whereRaw('DATE(due_date) = ?', [normalizedSourceDate])
         .orderBy('due_time', 'asc');
 
+      logger.info(`Found ${sourceTasks.length} tasks on source date`);
+
       if (sourceTasks.length === 0) {
-        logger.info(`No tasks found for source date: ${sourceDate}`);
+        logger.info(`No tasks found for source date: ${normalizedSourceDate}`);
         return [];
       }
 
@@ -319,23 +329,26 @@ export class TaskService {
       const duplicatedTasks: Task[] = [];
       
       for (const sourceTask of sourceTasks) {
+        logger.info(`Duplicating task: ${sourceTask.title}`);
+        
         const newTask = await Task.query().insert({
           user_id: userId,
           title: sourceTask.title,
           description: sourceTask.description || null,
-          due_date: targetDate,
+          due_date: normalizedTargetDate,
           due_time: sourceTask.due_time || null,
           end_time: sourceTask.end_time || null,
           priority: sourceTask.priority,
-          is_critical: Boolean(sourceTask.is_critical), // Ensure boolean
-          is_completed: false, // New tasks start as incomplete
+          is_critical: Boolean(sourceTask.is_critical),
+          is_completed: false,
           display_order: sourceTask.display_order || 0,
         });
         
+        logger.info(`Created duplicate task with ID: ${newTask.id}`);
         duplicatedTasks.push(newTask);
       }
 
-      logger.info(`Duplicated ${duplicatedTasks.length} tasks from ${sourceDate} to ${targetDate}`);
+      logger.info(`Successfully duplicated ${duplicatedTasks.length} tasks from ${normalizedSourceDate} to ${normalizedTargetDate}`);
       return duplicatedTasks;
     } catch (error) {
       logger.error('Duplicate day schedule error:', error);

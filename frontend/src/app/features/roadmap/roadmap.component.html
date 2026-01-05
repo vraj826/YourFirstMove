@@ -327,8 +327,11 @@
   </button>
 
   <!-- Duplicate Schedule Dialog -->
-  <div *ngIf="showDuplicateDialog" class="fixed inset-0 z-50 flex items-center justify-center" style="background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);">
-    <div class="glass-strong card animate-scale-in" style="max-width: 500px; width: 90%; padding: 2rem;">
+  <div *ngIf="showDuplicateDialog" 
+       class="fixed inset-0 flex items-center justify-center" 
+       style="z-index: 9999; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); position: fixed; top: 0; left: 0; right: 0; bottom: 0;">
+    <div class="glass-strong card animate-scale-in" 
+         style="max-width: 500px; width: 90%; padding: 2rem; position: relative; z-index: 10000;">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold text-gradient">Duplicate Schedule</h2>
         <button (click)="closeDuplicateDialog()" class="btn btn-ghost btn-sm" [disabled]="duplicating">
