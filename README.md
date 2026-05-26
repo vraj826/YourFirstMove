@@ -177,7 +177,15 @@ cd backend && npm start
 npm run test:backend
 ```
 
-**Run frontend tests:**
+Backend test files are located in `backend/src/__tests__/`. They cover:
+- Health check endpoint
+- Auth route input validation (register, login)
+- Auth middleware (token presence, format, validity)
+- Protected route access without a token
+
+Frontend tests are not yet implemented. Contributions welcome!
+
+**Run frontend tests (not yet implemented):**
 ```bash
 npm run test:frontend
 ```
