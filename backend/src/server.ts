@@ -1,6 +1,9 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import { validateEnvironment } from './config/env-validator';
+validateEnvironment();
+
 import app from './app';
 import './config/database';
 import schedulerService from './services/SchedulerService';
