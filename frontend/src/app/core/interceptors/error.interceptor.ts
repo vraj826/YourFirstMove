@@ -25,9 +25,13 @@ export class ErrorInterceptor implements HttpInterceptor {
         } else {
           // Server-side error
           if (error.status === 401) {
-            this.authService.logout();
-            this.router.navigate(['/login']);
-            errorMessage = 'Session expired. Please login again.';
+            if (request.url.includes('/api/auth/login')) {
+              errorMessage = error.error?.error?.message || 'Invalid email or password';
+            } else {
+              this.authService.logout();
+              this.router.navigate(['/login']);
+              errorMessage = 'Session expired. Please login again.';
+            }
           } else if (error.status === 403) {
             errorMessage = 'Access denied';
           } else if (error.status === 404) {

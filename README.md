@@ -77,7 +77,7 @@ DB_NAME=yourfirstmove
 DB_USER=root
 DB_PASSWORD=your_password
 
-# JWT
+# JWT (REQUIRED: Must be 32+ characters, secure, non-default example key)
 JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
 JWT_EXPIRES_IN=7d
 
@@ -346,6 +346,7 @@ npx knex migrate:make migration_name
 - **Database connection failed**: Check MySQL is running and credentials are correct
 - **Migration errors**: Ensure database exists and user has proper permissions
 - **Port already in use**: Change PORT in backend/.env or kill process using the port
+- **Environment validation failed**: Ensure `JWT_SECRET` is set in `backend/.env`, is at least 32 characters long, and does not use the default placeholder value. You can generate a secure key using: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
 
 ### Frontend Issues
 - **Compilation errors**: Clear node_modules and reinstall: `rm -rf node_modules && npm install`

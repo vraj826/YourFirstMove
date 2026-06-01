@@ -5,7 +5,7 @@ import ProductivityStreak from '../models/ProductivityStreak';
 import UserPreference from '../models/UserPreference';
 import logger from '../config/logger';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const SALT_ROUNDS = 10;
 
@@ -27,7 +27,10 @@ export class AuthService {
       // Check if user already exists
       const existingUser = await User.query().findOne({ email: userData.email });
       if (existingUser) {
-        throw new Error('User with this email already exists');
+        const error = new Error('User with this email already exists') as any;
+        error.statusCode = 400;
+        error.code = 'USER_ALREADY_EXISTS';
+        throw error;
       }
 
       // Hash password
@@ -69,13 +72,19 @@ export class AuthService {
       // Find user by email
       const user = await User.query().findOne({ email: credentials.email });
       if (!user) {
-        throw new Error('Invalid credentials');
+        const error = new Error('Invalid credentials') as any;
+        error.statusCode = 401;
+        error.code = 'UNAUTHORIZED';
+        throw error;
       }
 
       // Verify password
       const isValid = await this.comparePassword(credentials.password, user.password_hash);
       if (!isValid) {
-        throw new Error('Invalid credentials');
+        const error = new Error('Invalid credentials') as any;
+        error.statusCode = 401;
+        error.code = 'UNAUTHORIZED';
+        throw error;
       }
 
       // Generate JWT token
